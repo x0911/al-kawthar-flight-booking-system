@@ -12,11 +12,13 @@ from PyQt5.QtCore import Qt
 from backend.user_service import UserService
 from ui.dashboard_window import DashboardWindow
 
-
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication
 
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QIcon("assets/icon.png"))
         self.setWindowTitle("Al-Kawthar Flight Booking – Login")
         self.setGeometry(100, 100, 400, 300)
         self.setStyleSheet(self.load_styles())
@@ -120,6 +122,7 @@ class LoginWindow(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("assets/icon.png"))
     window = LoginWindow()
     window.show()
     sys.exit(app.exec_())

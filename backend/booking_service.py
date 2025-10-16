@@ -111,21 +111,44 @@ class BookingService:
     # --------------------------------------------------------------------------
     @staticmethod
     def get_user_bookings(user_id):
-        """Return all bookings for a given user."""
         conn = get_connection()
         cursor = conn.cursor()
-        try:
-            cursor.execute("""
-                SELECT b.*, f.flight_number, f.origin, f.destination, f.date, f.time
-                FROM bookings b
-                JOIN flights f ON b.flight_id = f.flight_id
-                WHERE b.user_id = ?
-                ORDER BY b.booking_date DESC
-            """, (user_id,))
-            bookings = cursor.fetchall()
-            return [dict(row) for row in bookings]
-        finally:
-            conn.close()
+        cursor.execute("""
+            SELECT 
+                b.booking_id,
+                b.flight_id,
+                b.seat_count,
+                b.booking_date,
+                b.total_price,
+                f.flight_number,
+                f.origin AS from_city,
+                f.destination AS to_city,
+                f.date AS flight_date,
+                f.time AS flight_time
+            FROM bookings b
+            JOIN flights f ON b.flight_id = f.flight_id
+            WHERE b.user_id = ?
+            ORDER BY f.date ASC
+        """, (user_id,))
+        rows = cursor.fetchall()
+        conn.close()
+
+        bookings = []
+        for row in rows:
+            bookings.append({
+                "booking_id": row["booking_id"],
+                "flight_id": row["flight_id"],
+                "seat_count": row["seat_count"],
+                "booking_date": row["booking_date"],
+                "total_price": row["total_price"],
+                "flight_number": row["flight_number"],
+                "from_city": row["from_city"],
+                "to_city": row["to_city"],
+                "flight_date": row["flight_date"],
+                "flight_time": row["flight_time"]
+            })
+        return bookings
+
 
     # --------------------------------------------------------------------------
     @staticmethod
